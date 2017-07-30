@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>P2_Physics</title>
+    <script src="phaser.js"></script>
+</head>
+<body>
+<script>
+    var game = new Phaser.Game(800,600,Phaser.AUTO,'phaser_p2_physics',{
+        preload:preload,
+        create:create,
+        update:update
+    });
+    function preload() {
+        game.load.spritesheet('chain', 'images/chain.png', 16, 26);
+        game.load.image('bg','images/clouds.jpg');
+    }
+    function create() {
+        var bg = game.add.image(0,0,'bg');
+        bg.scale.set(2);
+        game.physics.startSystem(Phaser.Physics.P2JS);
+        game.physics.p2.gravity.y = 1200;
+        createRope(40,400,64);
+
+    }
+    function createRope(length,anchorx,anchory) {
+        var lasetRect;
+        var height = 20;
+        var width = 16;
+        var maxForce = 20000;
+        for (var i = 0; i<=length; i++){
+            var x = anchorx;
+            var y = anchory+(i*height);
+            if (i%2===0){
+                newRect = game.add.sprite(x,y,'chain',1);
+            }else{
+                newRect = game.add.sprite(x,y,'chain',0);
+                lasetRect.bringToTop();
+            }
+            game.physics.p2.enable(newRect,false);
+            newRect.body.setRectangle(width,height);
+            if (i===0){
+                newRect.body.static = true;
+            }else{
+                newRect.body.velocity.x = 400;
+                newRect.body.mass = length/i;
+            }
+            if (lasetRect){
+                game.physics.p2.createRevoluteConstraint(newRect,[0,-10],lasetRect,[0,10],maxForce);
+            }
+            lasetRect = newRect;
+        }
+    }
+    function update() {
+
+    }
+</script>
+</body>
+</html>
