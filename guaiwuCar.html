@@ -27,19 +27,27 @@
     var lun2;
     function create() {
         var bg = game.add.tileSprite(0,0,game.width*10,512,'background');
-
-        game.world.setBounds(0,0,game.width*10,game.height);
         game.physics.startSystem(Phaser.Physics.BOX2D)
         game.physics.box2d.gravity.y = 500;
         game.physics.box2d.setBoundsToWorld();
         game.physics.box2d.restitution = 0.8;
 
+        var PTM = 20*10; // conversion ratio
+        var ground = new Phaser.Physics.Box2D.Body(this.game, null, game.width*10/2, 600);
+        var x1 = -20.0;
+        var y1 = 1.0 * box2d.b2Sin(x1 / 10.0 * box2d.b2_pi);
+        for (var i = 0; i < 80; ++i)
+        {
+            var x2 = x1 + 0.5;
+            var y2 = 2.0 * box2d.b2Sin(x2 / 10.0 * box2d.b2_pi);
+            ground.addEdge(x1 * PTM, y1 * PTM, x2 * PTM, y2 * PTM);
+            x1 = x2;
+            y1 = y2;
+        }
         createRope(50,-20,300);
-
         car = game.add.sprite(200,80,'car');
         lun = game.add.sprite(120,110,'lun');
         lun2 = game.add.sprite(275,110,'lun');
-        var ground = game.add.tileSprite(game.width/2,550,game.width,game.height-480,'ground');
         game.physics.box2d.enable(car,false);
         game.physics.box2d.enable(lun,false);
         game.physics.box2d.enable(lun2,false);
@@ -47,11 +55,10 @@
         game.physics.box2d.revoluteJoint(car,lun2,75,40,0,0);
         lun.body.setCircle(42);
         lun2.body.setCircle(42);
-
-        game.physics.box2d.enable(ground,true);
-        cursors = game.input.keyboard.createCursorKeys();
         game.camera.follow(car);
-        ground.body.velocity.x = 100;
+        game.world.setBounds(0,0,game.width*10,game.height);
+
+        cursors = game.input.keyboard.createCursorKeys();
     }
     function createRope(length, Anchorx, Anchory) {
         var lastRect;
@@ -129,7 +136,7 @@
         }
     }
     function render() {
-
+        game.debug.box2dWorld();
     }
 
 </script>
